@@ -5,8 +5,11 @@ const express = require('express');
 const engine = require('ejs-locals');
 const port =3005;
 const app = express();
+const controllers = require('./controllers');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const compression = require('compression');
+const db =require('./database/db');
 
 // Use the session middleware
 
@@ -21,42 +24,13 @@ app.engine('ejs', engine);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.use((request,response,next) => {
-    console.log('Entra al middleware 1');
+app.use(bodyParser.json({ type: 'application/json' }));
 
-    console.log('Body indefined:',request.body);
+//app.use(compression);
 
-    request.user ={
-        curso:'Bootcamp',
-        pais: 'Ecuador'
-    };
-    
-    next();
-});
+//routing a controlares
 
-app.use(bodyParser.json({ type: 'application/json' }))
-
-
-app.get('/api',(request,response)=>{
-
-console.log('Metodo GET path /api') ;  
-console.log('Pais:',request.user);
-response.render('ejs/servercarshop/index');
-});
-
-
-app.post('/api',(request,response)=>{
-
-console.log('Metodo POST path /api') ;
-
-request.body.product.type= 'vegetable';
-request.body.parser=true;
-console.log(request.body) ;
-response.json(request.body);
-});
-
-
-
+app.use('/',controllers);
 
 
 app.listen(port,() => console.log( `Puerto escuchando ${port} `));
